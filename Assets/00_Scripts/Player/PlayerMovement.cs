@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private PlayerAnimation _playerAnimation;
+    private CharacterAnimation _characterAnimation;
     
     private Rigidbody _rigidbody;
     private float _rotationY = 90f;
@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        _playerAnimation = GetComponentInChildren<PlayerAnimation>();
+        _characterAnimation = GetComponentInChildren<CharacterAnimation>();
         _rigidbody = GetComponent<Rigidbody>();
         
         
@@ -59,11 +59,11 @@ public class PlayerController : MonoBehaviour
         if (Input.GetAxisRaw(Axis.HORIZONTAL_AXIS) != 0 ||
             Input.GetAxisRaw(Axis.VERTICAL_AXIS) != 0)
         {
-            _playerAnimation.Walk(true);
+            _characterAnimation.Walk(true);
         }
         else
         {
-            _playerAnimation.Walk(false);
+            _characterAnimation.Walk(false);
         }
     } // walk animation 
 

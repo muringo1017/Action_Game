@@ -18,8 +18,11 @@ public class AnimationTags
     
     public const string IDLE_ANIMATION = "Idle";
     
+    public const string STAND_UP_TRIGGER = "StandUp";
     public const string KNOCK_DOWN_TRIGGER = "KnockDown";
     public const string DEATH_TRIGGER = "Death";
+    
+    public const string HIT_TRIGGER = "Hit";
 }
 
 public class Axis

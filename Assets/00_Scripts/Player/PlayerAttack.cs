@@ -13,7 +13,7 @@ public enum ComboState
 public class PlayerAttack : MonoBehaviour
 {
     
-    private PlayerAnimation _playerAnimation;
+    private CharacterAnimation _characterAnimation;
 
     private bool _activateTimerToReset;
     
@@ -24,7 +24,7 @@ public class PlayerAttack : MonoBehaviour
 
     private void Awake()
     {
-        _playerAnimation = GetComponentInChildren<PlayerAnimation>();
+        _characterAnimation = GetComponentInChildren<CharacterAnimation>();
     }
 
     public void Start()
@@ -54,15 +54,17 @@ public class PlayerAttack : MonoBehaviour
 
             if (_currentComboState == ComboState.PUNCH_1)
             {
-                _playerAnimation.Punch_1();
+                _characterAnimation.Punch_1();
+                
+                
             }
             if (_currentComboState == ComboState.PUNCH_2)
             {
-                _playerAnimation.Punch_2();
+                _characterAnimation.Punch_2();
             }
             if (_currentComboState == ComboState.PUNCH_3)
             {
-                _playerAnimation.Punch_3();
+                _characterAnimation.Punch_3();
             }
             
         }
@@ -90,12 +92,12 @@ public class PlayerAttack : MonoBehaviour
 
             if (_currentComboState == ComboState.KICK_1)
             {
-                _playerAnimation.Kick_1();
+                _characterAnimation.Kick_1();
             }
 
             if (_currentComboState == ComboState.KICK_2)
             {
-                _playerAnimation.Kick_2();
+                _characterAnimation.Kick_2();
             }
         }
         
