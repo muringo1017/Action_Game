@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-
+/*
 public class EnemyMovement : MonoBehaviour
 {
     private CharacterAnimation _enemyAnimation;
@@ -96,3 +96,5 @@ public class EnemyMovement : MonoBehaviour
 
     }
 }
+
+*/

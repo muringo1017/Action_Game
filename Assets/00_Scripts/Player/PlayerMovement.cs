@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+/*
 public class PlayerController : MonoBehaviour
 {
     private CharacterAnimation _characterAnimation;
@@ -72,3 +73,5 @@ public class PlayerController : MonoBehaviour
         
     }
 }
+
+*/

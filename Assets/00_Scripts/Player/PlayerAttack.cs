@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+/*
 public enum ComboState
 {
     NONE,
@@ -54,6 +55,7 @@ public class PlayerAttack : MonoBehaviour
 
             if (_currentComboState == ComboState.PUNCH_1)
             {
+
                 _characterAnimation.Punch_1();
                 
                 
@@ -119,4 +121,7 @@ public class PlayerAttack : MonoBehaviour
             }
         }
     }
+	
+
 }
+*/
