@@ -1,45 +1,58 @@
 using UnityEngine;
 
-public class AssaultRifle : BaseWeapon
+public class AssaultRifle : IWeapon
 {
-    private int ammo = 30;
-    private const int maxAmmo = 30;
-    private bool isFiring = false;
+    public WeaponData Data { get; private set; }
+    private bool _isFiring = false;
 
-    public AssaultRifle()
+    public AssaultRifle(WeaponData data)
     {
-        weaponName = "Assault Rifle";
-        weaponType = WeaponType.Ranged;
-        // weaponPrefab = Resources.Load<GameObject>("Weapons/AssaultRifle");
+        Data = data;
     }
 
-    public override void PerformLightAttack(PlayerCombat combat)
+    public void HandleInput(PlayerCombat combat, AttackType attackType, bool isInputReleased)
     {
-        if (ammo > 0 && !isFiring)
+        if (attackType == AttackType.LightAttack && !isInputReleased)
         {
+            // 단발
+            Debug.Log("Rifle Single Shot!");
             //combat.CharacterAnimation.RifleSingleShot();
-            ammo--;
-            // 발사체 생성 로직
+            combat.PlayerStateMachine.TransitionTo(PlayerState.Attack);
         }
-    }
-
-    public override void PerformHeavyAttack(PlayerCombat combat)
-    {
-        if (ammo > 0)
+        else if (attackType == AttackType.HeavyAttack)
         {
-            isFiring = true;
-            //combat.CharacterAnimation.RifleAutoFire();
-            // 연사 로직 (코루틴 등으로 구현)
+            if (!isInputReleased && !_isFiring)
+            {
+                // 연사 시작
+                _isFiring = true;
+                Debug.Log("Rifle Auto Fire Start!");
+                //combat.CharacterAnimation.RifleAutoFire(true);
+            }
+            else if (isInputReleased && _isFiring)
+            {
+                // 연사 중지
+                _isFiring = false;
+                Debug.Log("Rifle Auto Fire Stop!");
+                //combat.CharacterAnimation.RifleAutoFire(false);
+            }
         }
     }
 
-    public void StopFiring()
+    public void PerformAttack(CharacterAnimation characterAnim)
     {
-        isFiring = false;
+        throw new System.NotImplementedException();
     }
 
-    public void Reload()
+    public void OnEquip(PlayerCombat combat) { Debug.Log("Assault Rifle Equipped"); }
+    public void OnUnequip(PlayerCombat combat) { Debug.Log("Assault Rifle Unequipped"); }
+    public ComboState BufferedAttack { get; }
+    public void CommitToBufferedAttack()
     {
-        ammo = maxAmmo;
+        throw new System.NotImplementedException();
+    }
+
+    public void ClearBufferedAttack()
+    {
+        throw new System.NotImplementedException();
     }
 }

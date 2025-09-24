@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [Header("Component References")]
-    [SerializeField] private PlayerStateMachine _stateMachine;
-    [SerializeField] private PlayerController _controller;
-    [SerializeField] private PlayerCombat _combat;
-    [SerializeField] private CharacterAnimation _characterAnimation;
+    private PlayerStateMachine _stateMachine;
+    private PlayerController _controller;
+    private PlayerCombat _combat;
+    private CharacterAnimation _characterAnimation;
 
-    [SerializeField] private Rigidbody _rigidbody;
-    [SerializeField] private CapsuleCollider _capsuleCollider;
-    // Public properties for easy access
+    private Rigidbody _rigidbody;
+    private CapsuleCollider _capsuleCollider;
+
+    
     public PlayerStateMachine StateMachine => _stateMachine;
     public PlayerController Controller => _controller;
     public PlayerCombat Combat => _combat;

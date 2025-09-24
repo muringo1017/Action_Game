@@ -1,19 +1,9 @@
-using UnityEngine;
-
-public enum WeaponType
-{
-    None,
-    Melee,
-    Ranged
-}
-
 public interface IWeapon
 {
-    WeaponType GetWeaponType();
-    string GetWeaponName();
-    void PerformLightAttack(PlayerCombat combat);
-    void PerformHeavyAttack(PlayerCombat combat);
+    WeaponData Data { get; }
+    void HandleInput(PlayerCombat combat, AttackType attackType, bool isInputReleased);
+    void PerformAttack(CharacterAnimation characterAnim); // ⬅️ 이 줄을 추가하세요.
     void OnEquip(PlayerCombat combat);
     void OnUnequip(PlayerCombat combat);
-    GameObject GetWeaponPrefab();
+    
 }

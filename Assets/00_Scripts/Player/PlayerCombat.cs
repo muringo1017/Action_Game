@@ -1,123 +1,105 @@
 using UnityEngine;
 
+
+public enum ComboState
+{
+    NONE,
+    LightAttack_1, // Z
+    LightAttack_2, // ZZ
+    LightAttack_3, // ZZZ
+    HeavyAttack_1, // X 또는 Z-X
+    HeavyAttack_2, // XX 또는 ZZ-X
+    HeavyAttack_3  // XXX
+}
+
+[RequireComponent(typeof(WeaponManager))]
+[RequireComponent(typeof(PlayerStateMachine))]
 public class PlayerCombat : MonoBehaviour
 {
-    private WeaponManager weaponManager;
-    private CharacterAnimation characterAnim;
-    //private AmmoInventory ammoInventory;
+    // --- 컴포넌트 참조 ---
+    private WeaponManager _weaponManager;
+    private CharacterAnimation _characterAnimation;
+    private PlayerStateMachine _stateMachine;
 
-    private float comboResetTime = 2f;
-    private float lastAttackTime;
-    private int comboCount;
-    private bool isInCombo = false;
+    public PlayerStateMachine PlayerStateMachine => _stateMachine;
+
+    // --- 외부 데이터 참조 ---
+    [SerializeField] private WeaponData unarmedWeaponData; // 맨손용 WeaponData를 인스펙터에서 할당
+
+    // --- 전략 패턴 ---
+    private IWeapon _unarmed; // 맨손(Unarmed) 상태일 때의 공격 전략
+
+    // --- 무기 상호작용 ---
+    public float pickupRange = 1.5f;
 
     private void Awake()
     {
-        weaponManager = GetComponent<WeaponManager>();
-        //ammoInventory = GetComponent<AmmoInventory>();
-        characterAnim = GetComponentInChildren<CharacterAnimation>();
+        // 컴포넌트 초기화
+        _characterAnimation = GetComponentInChildren<CharacterAnimation>();
+        _stateMachine = GetComponent<PlayerStateMachine>();
+        _weaponManager = GetComponent<WeaponManager>();
+
+        _unarmed = new Unarmed(unarmedWeaponData);
     }
 
     private void Update()
     {
-        HandleCombatInput();
-        CheckComboReset();
+        if (_weaponManager.HasWeapon)
+            _weaponManager.CurrentWeapon.HandleInput(this, AttackType.None, false);
+        else
+            _unarmed.HandleInput(this, AttackType.None, false);
     }
 
-    private void HandleCombatInput()
+    public void RequestAttack(AttackType attackType, bool isInputReleased)
     {
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (_weaponManager.HasWeapon)
         {
-            if (weaponManager.HasWeapon)
-                weaponManager.PerformLightAttack();
-            else
-                PerformDefaultLightAttack();
-            
-            comboCount++;
-            lastAttackTime = Time.time;
-            isInCombo = true;
+            _weaponManager.CurrentWeapon.HandleInput(this, attackType, isInputReleased);
         }
-
-        if (Input.GetKeyDown(KeyCode.X))
+        else
         {
-            if (weaponManager.HasWeapon)
-                weaponManager.PerformHeavyAttack();
-            else
-                PerformDefaultHeavyAttack();
-            
-            comboCount++;
-            lastAttackTime = Time.time;
-            isInCombo = true;
-        }
-
-        if (Input.GetKeyDown(KeyCode.R)) weaponManager.ReloadCurrentWeapon();
-        if (Input.GetKeyDown(KeyCode.V)) HandleWeaponInteraction();
-    }
-
-    // 기본 경공격 (맨손)
-    public void PerformDefaultLightAttack()
-    {
-        switch (comboCount % 3)
-        {
-            case 0:
-                characterAnim.Punch1();
-                break;
-            case 1:
-                characterAnim.Punch2();
-                break;
-            case 2:
-                characterAnim.Punch3();
-                break;
+            _unarmed.HandleInput(this, attackType, isInputReleased);
         }
     }
 
-    // 기본 강공격 (맨손) - 추가된 함수
-    public void PerformDefaultHeavyAttack()
+    public void PerformCurrentAttack()
     {
-        switch (comboCount % 2)
+        if (_weaponManager.HasWeapon)
+            _weaponManager.CurrentWeapon.PerformAttack(_characterAnimation);
+        else
+            _unarmed.PerformAttack(_characterAnimation);
+    }
+
+    public void HandleWeaponInteraction()
+    {
+        if (_weaponManager.HasWeapon)
+            _weaponManager.DropCurrentWeapon();
+        else
+            TryToPickupWeapon();
+    }
+
+    private void TryToPickupWeapon()
+{
+    Collider[] colliders = Physics.OverlapSphere(transform.position, pickupRange);
+    foreach (var collider in colliders)
+    {
+        if (collider.TryGetComponent<WeaponPickup>(out var weaponPickup))
         {
-            case 0:
-                characterAnim.Kick1();
-                break;
-            case 1:
-                characterAnim.Kick2();
-                break;
+            // [수정] weaponPickup 컴포넌트 자체를 넘겨주고, 더 이상 여기서 Destroy하지 않습니다.
+            _weaponManager.EquipWeapon(weaponPickup);
+            return; 
         }
     }
-
-    private void CheckComboReset()
+}
+    public IWeapon GetCurrentWeaponStrategy()
     {
-        if (Time.time - lastAttackTime > comboResetTime && isInCombo)
+        if (_weaponManager.HasWeapon)
         {
-            comboCount = 0;
-            isInCombo = false;
-            // 콤보 리셋 애니메이션 필요시 추가
+            return _weaponManager.CurrentWeapon;
+        }
+        else
+        {
+            return _unarmed;
         }
     }
-
-    private void HandleWeaponInteraction()
-    {
-        if (weaponManager.HasWeapon) 
-            weaponManager.DropCurrentWeapon();
-        else 
-            TryPickupWeapon();
-    }
-
-    private void TryPickupWeapon()
-    {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 1.5f);
-        foreach (var collider in colliders)
-        {
-            WeaponPickup weaponPickup = collider.GetComponent<WeaponPickup>();
-            if (weaponPickup != null)
-            {
-                weaponManager.PickupWeapon(weaponPickup.GetWeapon());
-                Destroy(collider.gameObject);
-                break;
-            }
-        }
-    }
-
-    public CharacterAnimation CharacterAnimation => characterAnim;
-    //public AmmoInventory AmmoInventory => ammoInventory;
 }

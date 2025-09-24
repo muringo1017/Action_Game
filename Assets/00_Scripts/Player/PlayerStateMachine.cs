@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public enum PlayerState
 {
     Idle,
     Move,
     Attack,
+    Equip,
     Reload,
     SwitchWeapon,
     Dead
@@ -16,27 +16,43 @@ public enum PlayerState
 public class PlayerStateMachine : MonoBehaviour
 {
     private Player _player;
-    
     private Dictionary<PlayerState, IPlayerState> _states;
     private IPlayerState _currentState;
 
-    
     public Player Player => _player;
-    
     public IPlayerState CurrentState => _currentState;
     public PlayerState CurrentStateType => GetCurrentStateType();
     
-
     private void Awake()
     {
         _player = GetComponent<Player>();
         InitializeStates();
     }
 
+    
+    private void OnEnable()
+    {
+        if (Managers.InputManager != null)
+        {
+            Managers.InputManager.OnAttackPerformed += HandleAttack;
+            Managers.InputManager.OnWeaponInteractPerformed += HandleWeaponInteraction; 
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (Managers.InputManager != null)
+        {
+            Managers.InputManager.OnAttackPerformed -= HandleAttack;
+            Managers.InputManager.OnWeaponInteractPerformed -= HandleWeaponInteraction;
+        }
+    }
+
     private void Start()
     {
         TransitionTo(PlayerState.Idle);
     }
+
     private void Update()
     {
         _currentState?.OnUpdate();
@@ -49,50 +65,48 @@ public class PlayerStateMachine : MonoBehaviour
             { PlayerState.Idle, new IdleState() },
             { PlayerState.Move, new MoveState() },
             { PlayerState.Attack, new AttackState() },
-            //{ PlayerState.Reload, new ReloadState() },
-            //{ PlayerState.SwitchWeapon, new SwitchWeaponState() },
-            //{ PlayerState.Dead, new DeadState() }
+            { PlayerState.Equip, new EquipState() } 
         };
     }
 
-    // Enum으로 상태 전환 (주로 사용)
     public void TransitionTo(PlayerState newState)
     {
-        
-        
+        _currentState?.OnExit();
         TransitionTo(_states[newState]);
     }
 
-    // IPlayerState로 상태 전환
     public void TransitionTo(IPlayerState newState)
     {
-    
-        
-        // 새 상태 시작
         _currentState = newState;
         _currentState.OnEnter(this);
     }
 
     private PlayerState GetCurrentStateType()
     {
-        return GetStateType(_currentState);
-    }
-
-    private PlayerState GetStateType(IPlayerState state)
-    {
-        if (state == null) return PlayerState.Idle;
-        
         foreach (var pair in _states)
         {
-            if (pair.Value == state)
+            if (pair.Value == _currentState)
                 return pair.Key;
         }
         return PlayerState.Idle;
     }
 
-    // Helper method
-    public bool IsInState(PlayerState state)
+    private void HandleAttack(AttackType attackType, bool isInputReleased)
     {
-        return GetStateType(_currentState) == state;
+        // 공격 가능한 상태일 때만 공격을 요청
+        if (CurrentStateType == PlayerState.Idle || CurrentStateType == PlayerState.Move)
+        {
+            _player.Combat.RequestAttack(attackType, isInputReleased);
+        }
     }
+    private void HandleWeaponInteraction()
+    {
+        // 현재 이동 또는 대기 상태일 때만 장착 상태로 전환 가능
+        if (CurrentStateType == PlayerState.Idle || CurrentStateType == PlayerState.Move)
+        {
+            TransitionTo(PlayerState.Equip);
+        }
+    }
+    
+    
 }

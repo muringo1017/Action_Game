@@ -8,7 +8,18 @@ public abstract class BaseWeapon : IWeapon
 
     public abstract void PerformLightAttack(PlayerCombat combat);
     public abstract void PerformHeavyAttack(PlayerCombat combat);
-    
+
+    public WeaponData Data { get; }
+    public void HandleInput(PlayerCombat combat, AttackType attackType, bool isInputReleased)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void PerformAttack(CharacterAnimation characterAnim)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public virtual void OnEquip(PlayerCombat combat)
     {
        // combat.CharacterAnimation.ResetCombo();
@@ -19,6 +30,17 @@ public abstract class BaseWeapon : IWeapon
     {
         //combat.CharacterAnimation.ResetCombo();
         // 무기 모델 해제 로직
+    }
+
+    public ComboState BufferedAttack { get; }
+    public void CommitToBufferedAttack()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void ClearBufferedAttack()
+    {
+        throw new System.NotImplementedException();
     }
 
     public WeaponType GetWeaponType() => weaponType;

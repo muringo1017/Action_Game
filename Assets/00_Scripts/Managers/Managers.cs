@@ -5,18 +5,19 @@ public class Managers : MonoBehaviour
 {
     private static Managers _instance;
     
-    //매니저 컴포넌트
+    //컴포넌트
     private PlayerManager _playerManager;
     private WeaponManager _weaponManager;
     private InputManager _inputManager;
 
     public static Managers Instance => _instance;
     
-    //매니저 속성
+    //속성
     public static PlayerManager PlayerManager => Instance._playerManager;
     public static WeaponManager WeaponManager => Instance._weaponManager;
     public static InputManager InputManager => Instance._inputManager;
     
+    //싱글톤
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -31,6 +32,7 @@ public class Managers : MonoBehaviour
         CreateManagers();
     }
     
+    //초기화
     private void CreateManagers()
     {
         _playerManager = gameObject.AddComponent<PlayerManager>();

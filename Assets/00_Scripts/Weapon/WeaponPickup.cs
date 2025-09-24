@@ -2,48 +2,25 @@ using UnityEngine;
 
 public class WeaponPickup : MonoBehaviour
 {
-    [SerializeField] private WeaponType weaponType;
-    [SerializeField] private string specificWeaponName;
+    [SerializeField] private WeaponData weaponData;
+    private IWeapon _weaponInstance;
 
-    public IWeapon GetWeapon()
+    private void Awake()
     {
-        Debug.Log($"Trying to get weapon: {weaponType} - {specificWeaponName}");
-        
-        switch (weaponType)
+        // WeaponData를 기반으로 실제 무기 인스턴스를 생성
+        // 이 부분은 나중에 무기 종류가 많아지면 팩토리 패턴으로 개선할 수 있습니다.
+        if (weaponData.weaponName == "LongSword")
         {
-            case WeaponType.Melee:
-                return specificWeaponName switch
-                {
-                    "ShortSword" => new ShortSword(),
-                    "LongSword" => new LongSword(),
-                    _ => new ShortSword()
-                };
-
-            case WeaponType.Ranged:
-                return specificWeaponName switch
-                {
-                    "Pistol" => new Pistol(),
-                    "AssaultRifle" => new AssaultRifle(),
-                    //"Shotgun" => new Shotgun(),
-                    _ => new Pistol()
-                };
-
-            default:
-                return new ShortSword();
+            _weaponInstance = new LongSword(weaponData);
+        }
+        else if (weaponData.weaponName == "Assault Rifle")
+        {
+            _weaponInstance = new AssaultRifle(weaponData);
         }
     }
 
-    // 테스트용: 인스펙터에서 바로 무기 생성 가능하게
-    [ContextMenu("Test Create Weapon")]
-    private void TestCreateWeapon()
+    public IWeapon GetWeapon()
     {
-        IWeapon weapon = GetWeapon();
-        Debug.Log($"Created weapon: {weapon.GetWeaponName()}");
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, 0.5f);
+        return _weaponInstance;
     }
 }

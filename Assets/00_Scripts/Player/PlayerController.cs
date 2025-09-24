@@ -4,42 +4,37 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float moveSpeed = 6f;
-    public float jumpForce = 8f;
-    public float groundCheckDistance = 0.1f;
-    public LayerMask groundLayer = 1;
-
+    
     private Rigidbody _rigidbody;
+    private bool _facingRight = true;
 
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
-
     }
 
-    private void Update()
+    public void Move(float horizontalInput)
     {
-     
+        Vector3 velocity = _rigidbody.linearVelocity;
+        velocity.x = horizontalInput * moveSpeed;
+        _rigidbody.linearVelocity = velocity;
+
+        if (horizontalInput > 0 && !_facingRight) Flip();
+        else if (horizontalInput < 0 && _facingRight) Flip();
     }
     
-
-    // 외부에서 호출할 메서드들
-    public void Jump()
+    public void Stop()
     {
-        _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        Vector3 velocity = _rigidbody.linearVelocity;
+        velocity.x = 0;
+        _rigidbody.linearVelocity = velocity;
     }
 
-    public void ApplyMovement(Vector3 velocity)
+    private void Flip()
     {
-        if (_rigidbody != null)
-        {
-            _rigidbody.linearVelocity = velocity;
-        }
-    }
-
-    public void Flip(bool facingRight)
-    {
+        _facingRight = !_facingRight;
         Vector3 scale = transform.localScale;
-        scale.x = Mathf.Abs(scale.x) * (facingRight ? 1 : -1);
+        scale.x *= -1;
         transform.localScale = scale;
     }
 }
