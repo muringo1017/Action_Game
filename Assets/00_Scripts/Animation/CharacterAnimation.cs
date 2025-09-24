@@ -44,74 +44,36 @@ public class CharacterAnimation : MonoBehaviour
     {
         if (_animator == null) return;
         _animator.SetTrigger(LightAttack1);
-        Debug.Log("Playing LightAttack_1");
+     
     }
 
     public void LightAttack_2()
     {
         if (_animator == null) return;
         _animator.SetTrigger(LightAttack2);
-        Debug.Log("Playing LightAttack_2");
+       
     }
 
     public void LightAttack_3()
     {
         if (_animator == null) return;
         _animator.SetTrigger(LightAttack3);
-        Debug.Log("Playing LightAttack_3");
+        
     }
 
-    public void HeavyAttack_1()
-    {
-        if (_animator == null) return;
-        _animator.SetTrigger(HeavyAttack1);
-        Debug.Log("Playing HeavyAttack_1");
-    }
-
-    public void HeavyAttack_2()
-    {
-        if (_animator == null) return;
-        _animator.SetTrigger(HeavyAttack2);
-        Debug.Log("Playing HeavyAttack_2");
-    }
+    public void HeavyAttack_1() => _animator.SetTrigger(HeavyAttack1);
+    public void HeavyAttack_2() =>_animator.SetTrigger(HeavyAttack2);
+    public void HeavyAttack_3() => _animator.SetTrigger(HeavyAttack3);
+    public void LongSword_Light_1() => _animator.SetTrigger("LongSword_Light_1"); 
+    public void LongSword_Light_2() => _animator.SetTrigger("LongSword_Light_2"); 
+    public void LongSword_Light_3() => _animator.SetTrigger("LongSword_Light_3"); 
+    public void LongSword_Heavy_1() => _animator.SetTrigger("LongSword_Heavy_1");
+    public void LongSword_Heavy_2() => _animator.SetTrigger("LongSword_Heavy_2");
     
-    public void HeavyAttack_3()
-    {
-        if (_animator == null) return;
-        _animator.SetTrigger(HeavyAttack3);
-        Debug.Log("Playing HeavyAttack_3");
-    }
     
-    public void LongSword_Light_1()
-    {
-        // 애니메이터에 LongSword_Light_1 트리거를 추가하고 발동
-        _animator.SetTrigger("LongSword_Light_1"); 
-    }
-    public void LongSword_Light_2()
-    {
-        // 애니메이터에 LongSword_Light_1 트리거를 추가하고 발동
-        _animator.SetTrigger("LongSword_Light_2"); 
-    }
+    public void LongSword_Heavy_3() => _animator.SetTrigger("LongSword_Heavy_3");
     
-    public void LongSword_Light_3()
-    {
-        // 애니메이터에 LongSword_Light_1 트리거를 추가하고 발동
-        _animator.SetTrigger("LongSword_Light_3"); 
-    }
-    public void LongSword_Heavy_1()
-    {
-        // 애니메이터에 LongSword_Heavy_1 트리거를 추가하고 발동
-        _animator.SetTrigger("LongSword_Heavy_1");
-    }
-    public void LongSword_Heavy_2()
-    {
-        // 애니메이터에 LongSword_Heavy_1 트리거를 추가하고 발동
-        _animator.SetTrigger("LongSword_Heavy_2");
-    }
     
-    public void LongSword_Heavy_3()
-    {
-        // 애니메이터에 LongSword_Heavy_1 트리거를 추가하고 발동
-        _animator.SetTrigger("LongSword_Heavy_3");
-    }
+    public void Pistol_Attack_1() => _animator.SetTrigger("Pistol_Attack_1");
+   
 }

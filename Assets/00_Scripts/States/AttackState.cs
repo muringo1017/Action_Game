@@ -3,7 +3,7 @@ using UnityEngine;
 public class AttackState : BasePlayerState
 {
     private float _attackTimer;
-    private float _attackDuration = 0.7f; // 공격 애니메이션 평균 길이 (조정 필요)
+    private float _attackDuration = 0.4f; // 공격 애니메이션 평균 길이 (조정 필요)
 
     public override void OnEnter(PlayerStateMachine stateMachine)
     {

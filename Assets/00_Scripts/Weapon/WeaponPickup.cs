@@ -13,9 +13,9 @@ public class WeaponPickup : MonoBehaviour
         {
             _weaponInstance = new LongSword(weaponData);
         }
-        else if (weaponData.weaponName == "Assault Rifle")
+        else if (weaponData.weaponName == "Pistol")
         {
-            _weaponInstance = new AssaultRifle(weaponData);
+            _weaponInstance = new Pistol(weaponData);
         }
     }
 

@@ -1,41 +1,58 @@
 using UnityEngine;
 
-public class Pistol : BaseWeapon
+public class Pistol : IWeapon
 {
-    private int ammo = 12;
-    private const int maxAmmo = 12;
+    public WeaponData Data { get; private set; }
 
-    public Pistol()
+    // 권총은 콤보가 없으므로, 콤보 상태를 추적할 필요가 없습니다.
+
+    public Pistol(WeaponData data)
     {
-        weaponName = "Pistol";
-        weaponType = WeaponType.Ranged;
-        // weaponPrefab = Resources.Load<GameObject>("Weapons/Pistol");
+        Data = data;
     }
 
-    public override void PerformLightAttack(PlayerCombat combat)
+
+    public void HandleInput(PlayerCombat combat, AttackType attackType, bool isInputReleased)
     {
-        if (ammo > 0)
+        // 실제 공격 입력이 아니거나, 키에서 손을 뗀 입력이면 무시합니다.
+        if (attackType == AttackType.None || isInputReleased)
         {
-            Debug.Log("Pistol Single Shot! (Z pressed)");
-           // combat.CharacterAnimation.PistolSingleShot();
-            ammo--;
-            // 발사체 생성 로직
+            return;
         }
-        else
+
+        // 약공격(Z) 입력이 들어오면, Attack 상태로 전환을 요청합니다.
+        if (attackType == AttackType.LightAttack)
         {
-          //  combat.CharacterAnimation.PistolDryFire();
+            combat.PlayerStateMachine.TransitionTo(PlayerState.Attack);
         }
+        
+        // 여기에 나중에 강공격(X) 로직을 추가할 수 있습니다.
+        // else if (attackType == AttackType.HeavyAttack) { ... }
     }
 
-    public override void PerformHeavyAttack(PlayerCombat combat)
+   
+    public void PerformAttack(CharacterAnimation characterAnim)
     {
-        // 권총은 연사 기능 없음 (단발만)
-        PerformLightAttack(combat);
+        // 권총은 콤보가 없으므로 항상 하나의 공격 애니메이션만 호출합니다.
+        characterAnim.Pistol_Attack_1();
+    }
+    
+    // --- 아래는 IWeapon 인터페이스 규칙을 지키기 위한 필수 함수들입니다 ---
+
+    public void OnEquip(PlayerCombat combat)
+    {
+        Debug.Log("Pistol Equipped");
+        
     }
 
-    public void Reload()
+    public void OnUnequip(PlayerCombat combat)
     {
-        ammo = maxAmmo;
+        Debug.Log("Pistol Unequipped");
     }
+
+    // 권총은 콤보가 없으므로 버퍼링 관련 기능은 필요 없습니다.
+    // 하지만 IWeapon 인터페이스의 규칙이므로 함수 자체는 존재해야 합니다.
+    public ComboState BufferedAttack => ComboState.NONE;
+    public void CommitToBufferedAttack() { /* Do nothing */ }
+    public void ClearBufferedAttack() { /* Do nothing */ }
 }
-

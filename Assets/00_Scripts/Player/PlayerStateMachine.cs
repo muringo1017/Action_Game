@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public enum PlayerState
 {
     Idle,
@@ -18,10 +18,13 @@ public class PlayerStateMachine : MonoBehaviour
     private Player _player;
     private Dictionary<PlayerState, IPlayerState> _states;
     private IPlayerState _currentState;
-
+    private PlayerState _lastLoggedState;
+    
     public Player Player => _player;
     public IPlayerState CurrentState => _currentState;
     public PlayerState CurrentStateType => GetCurrentStateType();
+    
+    [SerializeField] private Text stateDebugText; // 인스펙터에서 연결
     
     private void Awake()
     {
@@ -56,8 +59,16 @@ public class PlayerStateMachine : MonoBehaviour
     private void Update()
     {
         _currentState?.OnUpdate();
+        
+        UpdateStateUI();
     }
-
+    private void UpdateStateUI()
+    {
+        if (stateDebugText != null)
+        {
+            stateDebugText.text = GetWeaponInfo();
+        }
+    }
     private void InitializeStates()
     {
         _states = new Dictionary<PlayerState, IPlayerState>
@@ -79,6 +90,7 @@ public class PlayerStateMachine : MonoBehaviour
     {
         _currentState = newState;
         _currentState.OnEnter(this);
+        UpdateStateUI();
     }
 
     private PlayerState GetCurrentStateType()
@@ -107,6 +119,34 @@ public class PlayerStateMachine : MonoBehaviour
             TransitionTo(PlayerState.Equip);
         }
     }
-    
+    private string GetWeaponInfo()
+    {
+        if (_player == null || _player.Combat == null)
+            return "Weapon: Initializing...";
+        
+        var weaponManager = _player.Combat.GetComponent<WeaponManager>();
+        if (weaponManager == null)
+            return "Weapon: No WeaponManager";
+        
+        if (!weaponManager.HasWeapon)
+            return "Weapon: Unarmed";
+        
+        var currentWeapon = weaponManager.CurrentWeapon;
+        if (currentWeapon == null)
+            return "Weapon: None";
+        
+        // 무기 타입에 따라 다른 정보 표시
+        switch (currentWeapon)
+        {
+            case LongSword longSword:
+                return "Weapon: LongSword";
+            case Pistol pistol:
+                return "Weapon: Pistol";
+            case Unarmed unarmed:
+                return "Weapon: Unarmed";
+            default:
+                return $"Weapon: {currentWeapon.GetType().Name}";
+        }
+    }
     
 }
